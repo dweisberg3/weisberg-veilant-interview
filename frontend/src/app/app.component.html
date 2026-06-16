@@ -1,0 +1,66 @@
+<div class="container">
+  <h1>Dynamic Data Table Viewer</h1>
+
+  <section class="card">
+    <h2>Register a new data source</h2>
+    <p class="hint">Enter a URL that returns a JSON array of flat objects (no nested objects/arrays).</p>
+
+    <div class="form-row">
+      <input
+        pInputText
+        type="text"
+        class="url-input"
+        placeholder="https://api.example.com/items"
+        [(ngModel)]="newUrl"
+        (keyup.enter)="register()"
+      />
+      <input
+        pInputText
+        type="text"
+        class="name-input"
+        placeholder="Name (optional)"
+        [(ngModel)]="newName"
+        (keyup.enter)="register()"
+      />
+      <p-button label="Register" [loading]="registering" [disabled]="!newUrl.trim()" (onClick)="register()"></p-button>
+    </div>
+
+    <p-message *ngIf="registerError" severity="error" [text]="registerError" styleClass="full-width"></p-message>
+  </section>
+
+  <section class="card">
+    <h2>View data</h2>
+
+    <div class="form-row">
+      <p-dropdown
+        [options]="schemas"
+        optionLabel="name"
+        placeholder="Select a schema"
+        [(ngModel)]="selectedSchema"
+        (onChange)="onSchemaChange()"
+        [style]="{ minWidth: '220px' }"
+      ></p-dropdown>
+      <p-button label="Get Data Now" [loading]="loadingData" [disabled]="!selectedSchema" (onClick)="loadData()"></p-button>
+    </div>
+
+    <p-message *ngIf="dataError" severity="error" [text]="dataError" styleClass="full-width"></p-message>
+
+    <p-table *ngIf="columns.length" [value]="data" [columns]="columns" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]">
+      <ng-template pTemplate="header" let-columns>
+        <tr>
+          <th *ngFor="let col of columns">{{ col.field }}</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowData let-columns="columns">
+        <tr>
+          <td *ngFor="let col of columns">{{ rowData[col.field] }}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td [attr.colspan]="columns.length">No data loaded yet - click "Get Data Now".</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </section>
+</div>
